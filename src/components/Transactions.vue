@@ -1,101 +1,122 @@
 <template>
-	<div>
-    <sell-stock :symbol="this.selectedTradeSymbol" :id="this.selectedTradeID"></sell-stock>
-		<b-row>
-			<b-table
-				class="tableFont"
-				striped
-				hover
+  <div>
+    <sell-stock
+      :transaction="this.selectedTransaction"
+    ></sell-stock>
+    <b-row>
+      <b-table
+        class="tableFont"
+        striped
+        hover
         :fields="fields"
-				:items="transactions"
-				small
-				table-variant="success"
-			>
-      <template #cell(actions)="row">
-        <b-icon-door-closed @click="selectedTrade(row)" v-b-modal.sell-stock></b-icon-door-closed>
-        <b-icon-code-slash class="ml-2" @click="exitTrade(row)"></b-icon-code-slash>
-      </template>
-
-			</b-table>
-		</b-row>
-	</div>
+        :items="transactions"
+        small
+        table-variant="default"
+      >
+        <template #cell(actions)="row">
+          <b-icon-door-closed
+            v-if="row.item.sellDate == null"
+            @click="selectedTrade(row)"
+            v-b-modal.sell-stock
+          ></b-icon-door-closed>
+          <b-icon-code-slash
+            class="ml-2"
+            @click="exitTrade(row)"
+            v-b-popover.hover.top="row.item.id"
+          ></b-icon-code-slash>
+        </template>
+      </b-table>
+    </b-row>
+  </div>
 </template>
 
 <script>
 import SellStock from "../modals/Sell.vue";
 export default {
   components: {
-      SellStock
+    SellStock,
   },
-	data() {
-		return {
-      selectedTradeID: null,
-      selectedTradeSymbol: null,
+  data() {
+    return {
+      selectedTransaction: null,
       fields: [
-        { 
-          key: 'buyDate'
-        },
-        { 
-          key: 'buyTime'
-        }, 
         {
-          key: 'symbol'
+          key: "buyDate",
         },
         {
-          key: 'shares'
+          key: "buyTime",
         },
-        { 
-          key: 'buyPrice'
+        {
+          key: "symbol",
         },
-        { 
-          key: 'buyTotal'
+        {
+          key: "shares",
         },
-        { 
-          key: 'sellPrice'
+        {
+          key: "buyPrice",
+          formatter: (value) => {
+            return Number(value).toFixed(2);
+          },
         },
-        { 
-          key: 'sellDate'
+        {
+          key: "buyTotal",
         },
-        { 
-          key: 'sellTotal'
+        {
+          key: "sellPrice",
+          formatter: (value) => {
+            return Number(value).toFixed(2);
+          }
         },
-        { 
-          key: 'sellTime'
+        {
+          key: "sellDate",
         },
-        { 
-          key: 'percentGain'
+        {
+          key: "sellTotal",
         },
-        { 
-          key: 'gain'
+        {
+          key: "sellTime",
         },
-        { 
-          key: 'actions'
-        }]
-		};
-	},
-	created() {
-    console.log('getting transactions')
-		this.$store.dispatch("loadTransactions");
-	},
-	computed: {
-		transactions() {
-			return this.$store.getters["allTransactions"];
-		},
-	},
+        {
+          key: "percentGain",
+          formatter: (value) => {
+
+            if ( value < 0 ) {
+              return '(' + value + ')%'
+            } else {
+              return value + '%'
+            }
+          }
+        },
+        {
+          key: "gain",
+        },
+        {
+          key: "actions",
+        },
+      ],
+    };
+  },
+  created() {
+    this.$store.dispatch("loadTransactions");
+  },
+  computed: {
+    transactions() {
+      return this.$store.getters["allTransactions"];
+    },
+  },
   methods: {
     selectedTrade(row) {
-      this.selectedTradeID = row.item.id
-      this.selectedTradeSymbol = row.item.symbol
+      this.selectedTransaction = row.item
     },
     exitTrade(row) {
-      console.log(row.item.id)
-    }
-  }
+      console.log(row.item.id);
+    },
+  },
 };
 </script>
 
 <style>
 .tableFont {
-	font-size: 0.75rem;
+  font-size: 0.75rem;
 }
 </style>

@@ -39,12 +39,12 @@
 
 				<b-form-group>
 					<label for="shares">Number of Shares</label>
-					<b-form-input v-model="shares" placeholder="" required></b-form-input>
+					<b-form-input v-model="shares" placeholder="" required type="number"></b-form-input>
 				</b-form-group>
 
 				<b-form-group>
 					<label for="price">Price</label>
-					<b-form-input v-model="buyPrice" placeholder="" required></b-form-input>
+					<b-form-input v-model="buyPrice" placeholder="" required type="number"></b-form-input>
 				</b-form-group>
 			</form>
 		</b-modal>
@@ -97,6 +97,9 @@ export default {
 			});
 		},
 		addTransaction() {
+			let bt = this.shares * this.buyPrice
+			bt = Number(bt).toFixed(2)
+
 			this.$store.dispatch("addStockPurchase", {
 				id: generateTransactionID(16),
 				buyDate: this.buyDate,
@@ -104,9 +107,13 @@ export default {
 				symbol: this.symbol.toUpperCase(),
 				shares: this.shares,
 				buyPrice: this.buyPrice,
+				buyTotal: bt, 
 				sellPrice: null,
 				sellDate: null,
-				sellTime: null
+				sellTime: null,
+				sellTotal: null,
+				gain: null,
+				percentGain: null
 			});
 		},
 	},

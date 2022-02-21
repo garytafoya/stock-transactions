@@ -48,7 +48,7 @@
 <script>
 export default {
 	name: "ExitTransaction",
-	props: ["symbol", "id"],
+	props: ["transaction"],
 	data() {
 		return {
 			sellDate: null,
@@ -91,11 +91,27 @@ export default {
 			});
 		},
 		exitTransaction() {
+			//do some math
+			let st = this.transaction.shares * this.sellPrice
+			st = Number(st).toFixed(2)
+
+			let g = st - Number(this.transaction.buyTotal)
+			g = g.toFixed(2)
+
+
+			let pg = ((st - this.transaction.buyTotal) / this.transaction.buyTotal)
+			pg = (pg * 100).toFixed(2)
+
+
+
 			this.$store.dispatch("updateTransaction", {
-				id: this.id,
+				id: this.transaction.id,
 				sellPrice: this.sellPrice,
 				sellDate: this.sellDate,
-				sellTime: this.sellTime
+				sellTime: this.sellTime,
+				sellTotal: st,
+				gain: g,
+				percentGain: pg
 			});
 		},
 	},

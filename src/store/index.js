@@ -57,12 +57,16 @@ export default new Vuex.Store({
         })
       },
       updateTransaction({ commit }, payload) {
+        console.log(payload)
         const docRef = doc(db, 'Transactions', payload.id)
 
         updateDoc(docRef, {
           sellDate: payload.sellDate,
           sellPrice: payload.sellPrice,
-          sellTime: payload.sellTime
+          sellTime: payload.sellTime,
+          sellTotal: payload.sellTotal,
+          gain: payload.gain,
+          percentGain: payload.percentGain
         })
         .then(
           commit('UPDATE_TRANSACTION', payload)
@@ -85,6 +89,9 @@ export default new Vuex.Store({
         transaction.sellDate = payload.sellDate
         transaction.sellTime = payload.sellTime
         transaction.sellPrice = payload.sellPrice
+        transaction.sellTotal = payload.sellTotal
+        transaction.gain = payload.gain
+        transaction.percentGain = payload.percentGain
       }
     },
     getters: {
