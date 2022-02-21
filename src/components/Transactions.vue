@@ -1,23 +1,97 @@
 <template>
-  <div>
-    <b-row>
-     <b-table class="tableFont" striped hover :items="items" small table-variant="success" ></b-table>
-    </b-row>
-  </div>
+	<div>
+    <sell-stock :symbol="this.selectedTradeSymbol" :id="this.selectedTradeID"></sell-stock>
+		<b-row>
+			<b-table
+				class="tableFont"
+				striped
+				hover
+        :fields="fields"
+				:items="transactions"
+				small
+				table-variant="success"
+			>
+      <template #cell(actions)="row">
+        <b-icon-door-closed @click="selectedTrade(row)" v-b-modal.sell-stock></b-icon-door-closed>
+        <b-icon-code-slash class="ml-2" @click="exitTrade(row)"></b-icon-code-slash>
+      </template>
+
+			</b-table>
+		</b-row>
+	</div>
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        items: [
-          {buyDate:'03/28/2023', buyTime: '8:00am', symbol:'OCGN', shares:'100', buyPrice: '5.00', buyTotal:'1000', sellPrice:'6.00', sellDate: '03/28/2022', sellTime: '8:05am',sellTotal: '3000', percentGain: '5%', gain: '400', balance: '10000'},
-          {buyDate:'03/28/2022', buyTime: '8:00am', symbol:'OCGN', shares:'100', buyPrice: '5.00', buyTotal:'1000', sellPrice:'6.00', sellDate: '03/28/2022', sellTime: '8:05am', sellTotal: '3000', percentGain: '5%', gain: '400', balance: '10000'},
-          {buyDate:'03/28/2022', buyTime: '8:00am', symbol:'OCGN', shares:'100', buyPrice: '5.00', buyTotal:'1000', sellPrice:'6.00', sellDate: '03/28/2022', sellTime: '8:05am', sellTotal: '3000', percentGain: '5%', gain: '400', balance: '10000'}
-        ]
-      }
+import SellStock from "../modals/Sell.vue";
+export default {
+  components: {
+      SellStock
+  },
+	data() {
+		return {
+      selectedTradeID: null,
+      selectedTradeSymbol: null,
+      fields: [
+        { 
+          key: 'buyDate'
+        },
+        { 
+          key: 'buyTime'
+        }, 
+        {
+          key: 'symbol'
+        },
+        {
+          key: 'shares'
+        },
+        { 
+          key: 'buyPrice'
+        },
+        { 
+          key: 'buyTotal'
+        },
+        { 
+          key: 'sellPrice'
+        },
+        { 
+          key: 'sellDate'
+        },
+        { 
+          key: 'sellTotal'
+        },
+        { 
+          key: 'sellTime'
+        },
+        { 
+          key: 'percentGain'
+        },
+        { 
+          key: 'gain'
+        },
+        { 
+          key: 'actions'
+        }]
+		};
+	},
+	created() {
+    console.log('getting transactions')
+		this.$store.dispatch("loadTransactions");
+	},
+	computed: {
+		transactions() {
+			return this.$store.getters["allTransactions"];
+		},
+	},
+  methods: {
+    selectedTrade(row) {
+      this.selectedTradeID = row.item.id
+      this.selectedTradeSymbol = row.item.symbol
+    },
+    exitTrade(row) {
+      console.log(row.item.id)
     }
   }
+};
 </script>
 
 <style>
