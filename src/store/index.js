@@ -7,7 +7,6 @@ import {
   doc,
   collection,
   setDoc,
-  onSnapshot,
   getDocs,
   updateDoc
 } from 'firebase/firestore'
@@ -22,7 +21,8 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
-        transactions: []
+        transactions: [],
+        selectedTrade: {}
     },
     actions: {
       loadTransactions({ commit }) {
@@ -39,14 +39,6 @@ export default new Vuex.Store({
             console.log(error)
           })
       },
-      loadTransactionsAAA({ commit }) {
-        const colRef = collection(db, 'Transactions')
-
-        onSnapshot(colRef, (snapshot) => {
-          let transactions = snapshot.data().transactions
-          commit('LOAD_TRANSACTIONS', transactions)
-        })
-      },
       addStockPurchase({ commit }, payload) {
         setDoc(doc(db, 'Transactions', payload.id), { ...payload })
         .then(
@@ -56,14 +48,20 @@ export default new Vuex.Store({
           console.log(error)
         })
       },
-      updateTransaction({ commit }, payload) {
+      editTrade({ commit }, payload) {
         console.log(payload)
         const docRef = doc(db, 'Transactions', payload.id)
 
         updateDoc(docRef, {
+          buyDate: payload.buyDate,
           sellDate: payload.sellDate,
-          sellPrice: payload.sellPrice,
+          buyTime: payload.buyTime,
           sellTime: payload.sellTime,
+          buyPrice: payload.buyPrice,
+          sellPrice: payload.sellPrice,
+          symbol: payload.symbol,
+          shares: payload.shares,
+          buyTotal: payload.buyTotal,
           sellTotal: payload.sellTotal,
           gain: payload.gain,
           percentGain: payload.percentGain
@@ -71,7 +69,9 @@ export default new Vuex.Store({
         .then(
           commit('UPDATE_TRANSACTION', payload)
         )
-
+      },
+      updateSelectedTrade({ commit }, payload) {
+        commit('UPDATE_SELECTED_TRADE', payload)
       }
     },
     mutations: {
@@ -85,18 +85,35 @@ export default new Vuex.Store({
         const transaction = state.transactions.find(transaction => {
           return transaction.id === payload.id
         })
-
-        transaction.sellDate = payload.sellDate
-        transaction.sellTime = payload.sellTime
-        transaction.sellPrice = payload.sellPrice
-        transaction.sellTotal = payload.sellTotal
-        transaction.gain = payload.gain
-        transaction.percentGain = payload.percentGain
+        Object.assign(transaction, payload)
+      },
+      UPDATE_SELECTED_TRADE(state, payload) {
+        state.selectedTrade = payload
       }
     },
     getters: {
       allTransactions (state) {
         return state.transactions
+      },
+      selectedTrade (state) {
+        return state.selectedTrade
+      },
+      numberOfTrades(state) {
+        return state.transactions.length
+      },
+      numberOfWinners(state) {
+        let count = 0
+        state.transactions.forEach(function (trade) {
+          if (trade.gain > 0) { count++ }
+        })
+        return count
+      },
+      numberOfLosers(state) {
+        let count = 0
+        state.transactions.forEach(function (trade) {
+          if (trade.gain < 0) { count++ }
+        })
+        return count
       }
     }
 })

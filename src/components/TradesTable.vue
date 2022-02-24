@@ -1,8 +1,6 @@
 <template>
   <div>
-    <sell-stock
-      :transaction="this.selectedTransaction"
-    ></sell-stock>
+    <edit-trade></edit-trade>
     <b-row>
       <b-table
         class="tableFont"
@@ -12,16 +10,14 @@
         :items="transactions"
         small
         table-variant="default"
+        :tbody-tr-class="rowClass"
       >
         <template #cell(actions)="row">
-          <b-icon-door-closed
-            v-if="row.item.sellDate == null"
-            @click="selectedTrade(row)"
-            v-b-modal.sell-stock
-          ></b-icon-door-closed>
+          <b-icon-pencil-square
+            @click="showEditModal(row.item)"
+          ></b-icon-pencil-square>
           <b-icon-code-slash
             class="ml-2"
-            @click="exitTrade(row)"
             v-b-popover.hover.top="row.item.id"
           ></b-icon-code-slash>
         </template>
@@ -31,14 +27,24 @@
 </template>
 
 <script>
-import SellStock from "../modals/Sell.vue";
+import EditTrade from "../modals/EditTrade.vue";
 export default {
   components: {
-    SellStock,
-  },
+		EditTrade
+	},
+  props: ["id"],
   data() {
     return {
-      selectedTransaction: null,
+      selectedTrade: {
+        buyDate: null,
+        sellDate: null,
+        buyTime: null,
+        sellTime: null,
+        symbol: null,
+        shares: null,
+        buyPrice: null,
+        sellPrice: null
+      },
       fields: [
         {
           key: "buyDate",
@@ -89,6 +95,9 @@ export default {
         },
         {
           key: "gain",
+          formatter: (value) => {
+            return Number(value).toFixed(2);
+          }
         },
         {
           key: "actions",
@@ -99,18 +108,32 @@ export default {
   created() {
     this.$store.dispatch("loadTransactions");
   },
+   watch: {
+		tradeData(value) {
+			console.log('trade changed')
+      console.log(value)
+      this.$bvModal.show("edit-trade")
+		}
+	},
   computed: {
     transactions() {
       return this.$store.getters["allTransactions"];
     },
+    tradeData() {
+			return this.$store.getters["selectedTrade"];
+		}
   },
   methods: {
-    selectedTrade(row) {
-      this.selectedTransaction = row.item
+    showEditModal(row) {
+      console.log('clicked')
+      this.$store.dispatch("updateSelectedTrade", row)
+      this.$bvModal.show("edit-trade")
     },
-    exitTrade(row) {
-      console.log(row.item.id);
-    },
+    rowClass(item, type) {
+      if (!item || type !== 'row') return
+      if (item.gain > 0) return 'table-success'
+      if (item.gain < 0) return 'table-danger'
+    }
   },
 };
 </script>
