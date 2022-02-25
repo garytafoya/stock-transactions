@@ -1,6 +1,6 @@
 <template>
   <div>
-    <edit-trade></edit-trade>
+    <sell-stock :transaction="this.selectedTransaction"></sell-stock>
     <b-row>
       <b-table
         class="tableFont"
@@ -10,12 +10,13 @@
         :items="transactions"
         small
         table-variant="default"
-        :tbody-tr-class="rowClass"
       >
         <template #cell(actions)="row">
-          <b-icon-pencil-square
-            @click="showEditModal(row.item)"
-          ></b-icon-pencil-square>
+          <b-icon-door-closed
+            v-if="row.item.sellDate == null"
+            @click="selectedTrade(row)"
+            v-b-modal.add-edit-trade
+          ></b-icon-door-closed>
           <b-icon-code-slash
             class="ml-2"
             v-b-popover.hover.top="row.item.id"
@@ -30,21 +31,11 @@
 import EditTrade from "../modals/EditTrade.vue";
 export default {
   components: {
-		EditTrade
-	},
-  props: ["id"],
+    EditTrade
+  },
   data() {
     return {
-      selectedTrade: {
-        buyDate: null,
-        sellDate: null,
-        buyTime: null,
-        sellTime: null,
-        symbol: null,
-        shares: null,
-        buyPrice: null,
-        sellPrice: null
-      },
+      selectedTransaction: null,
       fields: [
         {
           key: "buyDate",
@@ -71,7 +62,7 @@ export default {
           key: "sellPrice",
           formatter: (value) => {
             return Number(value).toFixed(2);
-          }
+          },
         },
         {
           key: "sellDate",
@@ -85,19 +76,15 @@ export default {
         {
           key: "percentGain",
           formatter: (value) => {
-
-            if ( value < 0 ) {
-              return '(' + value + ')%'
+            if (value < 0) {
+              return "(" + value + ")%";
             } else {
-              return value + '%'
+              return value + "%";
             }
-          }
+          },
         },
         {
           key: "gain",
-          formatter: (value) => {
-            return Number(value).toFixed(2);
-          }
         },
         {
           key: "actions",
@@ -112,20 +99,11 @@ export default {
     transactions() {
       return this.$store.getters["allTransactions"];
     },
-    tradeData() {
-			return this.$store.getters["selectedTrade"];
-		}
   },
   methods: {
-    showEditModal(row) {
-      this.$store.dispatch("updateSelectedTrade", row)
-      this.$bvModal.show("edit-trade")
+    selectedTrade(row) {
+      this.selectedTransaction = row.item;
     },
-    rowClass(item, type) {
-      if (!item || type !== 'row') return
-      if (item.gain > 0) return 'table-success'
-      if (item.gain < 0) return 'table-danger'
-    }
   },
 };
 </script>

@@ -2,7 +2,7 @@
 	<div class="container">
 		<add-trade></add-trade>
 
-		<h1>Stock Trades</h1>
+		<h1 class="display-4">TRANSACTIONS</h1>
 		<b-row>
 				<b-col md="4">
 					<total-trades></total-trades>
@@ -15,11 +15,11 @@
 				</b-col>
 		</b-row>
 		<b-button
-      class="mb-3"
-      variant="success"
+      class="mb-3 mt-3"
+      variant="primary"
       v-b-modal.add-trade
 		>
-    Trade
+    ADD NEW TRADE
     </b-button>
 
 		<trades-table></trades-table>

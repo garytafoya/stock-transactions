@@ -49,9 +49,7 @@ export default new Vuex.Store({
         })
       },
       editTrade({ commit }, payload) {
-        console.log(payload)
         const docRef = doc(db, 'Transactions', payload.id)
-
         updateDoc(docRef, {
           buyDate: payload.buyDate,
           sellDate: payload.sellDate,

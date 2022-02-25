@@ -5,8 +5,6 @@
 			centered
 			button-size="lg"
 			title="Edit Trade"
-			@show="resetModal"
-			@hidden="resetModal"
 			@ok="handleOk"
 		>
 			<form ref="form" @submit.stop.prevent="handleSubmit">
@@ -145,16 +143,6 @@ export default {
 			const valid = this.$refs.form.checkValidity();
 			return valid;
 		},
-		resetModal() {
-			// this.buyDate = null
-			// this.sellDate = null
-			// this.buyTime = null
-			// this.sellTime = null
-			// this.symbol = null
-			// this.shares = null
-			// this.buyPrice = null
-			// this.sellPrice = null
-		},
 		handleOk(bvModalEvt) {
 			// Prevent modal from closing
 			bvModalEvt.preventDefault();
@@ -173,17 +161,29 @@ export default {
 			});
 		},
 		editTrade() {
-			let bt = this.shares * this.buyPrice;
-			bt = Number(bt).toFixed(2);
+			let bt = null
+			let st = null
+			let gn = null
+			let pg = null
+			
+			//calculate buyTotal
+			if (this.shares != null && this.buyPrice != null) {
+				bt = this.shares * this.buyPrice;
+				bt = Number(bt).toFixed(2);
+			}
 
-			let st = this.shares * this.sellPrice;
-			st = Number(st).toFixed(2);
+			//calculate sellTotal
+			if (this.shares != null && this.sellPrice != null) {
+				st = this.shares * this.sellPrice;
+				st = Number(st).toFixed(2);
+			}
 
-			let gain = st - bt
-
-			let pg = ((st-bt) / bt) * 100
-			pg = pg.toFixed(2)
-
+			//calculate gain & percent gain
+			if (st != null && bt != null) {
+				gn = st - bt
+				pg = ((st-bt) / bt) * 100
+				pg = pg.toFixed(2)
+			}
 
 			this.$store.dispatch("editTrade", {
 				id: this.id,
@@ -197,12 +197,9 @@ export default {
 				sellPrice: this.sellPrice,
 				buyTotal: bt,
 				sellTotal: st,
-				gain: gain,
+				gain: gn,
 				percentGain: pg
 			});
-		},
-		showTrade() {
-			console.log(this.trade)
 		}
 	},
 };

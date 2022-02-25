@@ -118,20 +118,9 @@ export default {
 			sellPrice: null
 		};
 	},
-	computed: {
-		modalTitle() {
-			if (this.mode == "add") {
-				return 'New Trade'
-			} else if (this.mode == "edit") {
-				return 'Edit Trade'
-			}
-			return ''
-		}
-	},
 	methods: {
 		checkFormValidity() {
 			const valid = this.$refs.form.checkValidity();
-			//   this.weightState = valid;
 			return valid;
 		},
 		resetModal() {
@@ -162,8 +151,29 @@ export default {
 			});
 		},
 		addTransaction() {
-			let bt = this.shares * this.buyPrice;
-			bt = Number(bt).toFixed(2);
+			let bt = null
+			let st = null
+			let gn = null
+			let pg = null
+			
+			//calculate buyTotal
+			if (this.shares != null && this.buyPrice != null) {
+				bt = this.shares * this.buyPrice;
+				bt = Number(bt).toFixed(2);
+			}
+
+			//calculate sellTotal
+			if (this.shares != null && this.sellPrice != null) {
+				st = this.shares * this.sellPrice;
+				st = Number(st).toFixed(2);
+			}
+
+			//calculate gain & percent gain
+			if (st != null && bt != null) {
+				gn = st - bt
+				pg = ((st-bt) / bt) * 100
+				pg = pg.toFixed(2)
+			}
 
 			this.$store.dispatch("addStockPurchase", {
 				id: generateTransactionID(16),
@@ -176,9 +186,9 @@ export default {
 				buyPrice: this.buyPrice,
 				sellPrice: this.sellPrice,
 				buyTotal: bt,
-				sellTotal: null,
-				gain: null,
-				percentGain: null
+				sellTotal: st,
+				gain: gn,
+				percentGain: pg
 			});
 		},
 	},
