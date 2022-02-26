@@ -8,7 +8,8 @@ import {
   collection,
   setDoc,
   getDocs,
-  updateDoc
+  updateDoc,
+  deleteDoc
 } from 'firebase/firestore'
 
 // init firebase app
@@ -70,6 +71,13 @@ export default new Vuex.Store({
       },
       updateSelectedTrade({ commit }, payload) {
         commit('UPDATE_SELECTED_TRADE', payload)
+      },
+      deleteTrade({commit}, payload) {
+        const docRef = doc(db, 'Transactions', payload)
+        deleteDoc(docRef)
+        .then(
+          commit('DELETE_TRADE', payload)
+        )
       }
     },
     mutations: {
@@ -87,6 +95,10 @@ export default new Vuex.Store({
       },
       UPDATE_SELECTED_TRADE(state, payload) {
         state.selectedTrade = payload
+      },
+      DELETE_TRADE(state, payload) {
+        const index = state.transactions.findIndex(trade => trade.id === payload)
+        state.transactions.splice(index, 1)
       }
     },
     getters: {

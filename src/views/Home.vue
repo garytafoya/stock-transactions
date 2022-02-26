@@ -2,7 +2,7 @@
 	<div class="container">
 		<add-trade></add-trade>
 
-		<h1 class="display-4">TRANSACTIONS</h1>
+		<h1 class="display-5">TRANSACTIONS</h1>
 		<b-row>
 				<b-col md="4">
 					<total-trades></total-trades>

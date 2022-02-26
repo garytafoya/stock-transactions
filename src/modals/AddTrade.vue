@@ -14,12 +14,12 @@
 					<b-col md="6">
 						<b-form-group>
 							<label
-								for="date"
+								for="buyDate"
 								invalid-feedback="Select Date"
 								>Purchase Date</label
 							>
 							<b-form-datepicker
-								id="date"
+								id="buyDate"
 								v-model="buyDate"
 								class="mb-2"
 								required
@@ -67,13 +67,13 @@
 					<b-col md="6">
 						<b-form-group>
 							<label
-								for="date"
+								for="sellDate"
 								invalid-feedback="Select Date"
 							>
 								Sell Date
 							</label>
 							<b-form-datepicker
-								id="date"
+								id="sellDate"
 								v-model="sellDate"
 								class="mb-2"
 							></b-form-datepicker>
@@ -141,10 +141,10 @@ export default {
 		},
 		handleSubmit() {
 			// Exit when the form isn't valid
-			if (!this.checkFormValidity()) {
-				console.log("form not ready");
-				return;
-			}
+			// if (!this.checkFormValidity()) {
+			// 	console.log("form not ready");
+			// 	return;
+			// }
 			this.addTransaction();
 			this.$nextTick(() => {
 				this.$bvModal.hide("add-trade")

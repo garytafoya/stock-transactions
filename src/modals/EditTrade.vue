@@ -151,10 +151,10 @@ export default {
 		},
 		handleSubmit() {
 			// Exit when the form isn't valid
-			if (!this.checkFormValidity()) {
-				console.log("form not ready");
-				return;
-			}
+			// if (!this.checkFormValidity()) {
+			// 	console.log("form not ready");
+			// 	return;
+			// }
 			this.editTrade();
 			this.$nextTick(() => {
 				this.$bvModal.hide("edit-trade")
